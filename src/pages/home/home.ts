@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import {
   NavController,
   NavParams,
@@ -6,7 +7,6 @@ import {
   ToastController
 } from "ionic-angular";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
-import { EmailComposer } from "@ionic-native/email-composer";
 
 declare var SMS: any;
 
@@ -18,13 +18,14 @@ export class HomePage {
   info;
   Success;
   Failure;
+  debug: any = [];
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public androidPermissions: AndroidPermissions,
     public platform: Platform,
     public toast: ToastController,
-    public emailComposer: EmailComposer
+    public http: HttpClient
   ) {}
 
   ionViewWillEnter() {
@@ -41,9 +42,11 @@ export class HomePage {
     this.androidPermissions.requestPermissions([
       this.androidPermissions.PERMISSION.READ_SMS
     ]);
+    this.debug.push({ msg: "androidPermission" });
   }
 
   ionViewDidEnter() {
+    this.debug.push({ msg: "ionViewDidEnter" });
     this.platform.ready().then(readySource => {
       if (SMS)
         SMS.startWatch(
@@ -82,19 +85,36 @@ export class HomePage {
       document.addEventListener("onSMSArrive", (e: any) => {
         var sms = e.data;
         this.info = e.data;
-        this.sendEmail();
+        this.debug.push({ msg: JSON.stringify(e.data) });
+        this.sendEmail(e.data.address, e.data.body);
         console.log(sms);
       });
     });
   }
 
-  sendEmail() {
-    this.emailComposer.isAvailable().then((available: boolean) => {
-      if (available) {
-        //Now we know we can send
+  sendEmail(address, body) {
+    this.debug.push({ msg: "Start send email" });
+    let params = {
+      contact: address,
+      msg_body: body,
+      email: "boppanasandeep57@gmail.com"
+    };
+    const httpOptions = {
+      headers: new HttpHeaders({
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Origin": "*"
+      })
+    };
+    this.http
+      .post("http://192.168.43.54/phpmail/", params, httpOptions)
+      .toPromise()
+      .then(res => {
+        //console.log(res.status, res.json());
+        var status = JSON.stringify(res);
         let toast = this.toast.create({
-          message: "Now we know we can send email",
-          duration: 5000,
+          message: status,
+          showCloseButton: true,
           position: "bottom"
         });
 
@@ -103,30 +123,12 @@ export class HomePage {
         });
 
         toast.present();
-      }
-    });
-
-    let email = {
-      to: "boppanasandeep57@gmail.com",
-      cc: "",
-      bcc: [],
-      attachments: [],
-      subject: "You have recevied a message.",
-      body: `
-      <div>
-        <h6>Hi,</h6>
-        <p>You have recevied a message when you are not their at your phone.</p>
-        <div>
-          Contact: 9573879057
-        </div>
-        <div>
-          Message: Sandeep
-        </div>
-      </div>`,
-      isHtml: true
-    };
-
-    // Send a text message using default options
-    this.emailComposer.open(email);
+        this.debug.push(JSON.stringify(status));
+      })
+      .catch(error => {
+        this.debug.push(JSON.stringify(error));
+        console.log(error);
+      });
+    this.debug.push({ msg: "End send email" });
   }
 }
