@@ -8,26 +8,13 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let x of messages">
-      <ion-avatar item-start>
-        <button ion-button color="danger" round>{{x.address}}</button>
-      </ion-avatar>
-      <h2>{{x.address}}</h2>
-      <p>{{x.body}}</p>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <ion-icon [name]="item.icon" item-start></ion-icon>
-      {{item.title}}
-      <div class="item-note" item-end>
-        {{item.note}}
-      </div>
-    </button>
-  </ion-list>
-  <div *ngIf="selectedItem" padding>
-    You navigated here from
-    <b>{{selectedItem.title}}</b>
+  <div>
+    <p>{{readListSMS}}</p>
+  </div>
+  <div *ngFor="let d of messages">
+    <ion-row>
+      <ion-col col-12>{{d.address}}</ion-col>
+      <ion-col col-12>{{d.body}}</ion-col>
+    </ion-row>
   </div>
 </ion-content>

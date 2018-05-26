@@ -1,87 +1,83 @@
-import { Component } from '@angular/core';
-import { NavController, NavParams, Platform } from 'ionic-angular';
-import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { Component } from "@angular/core";
+import { NavController, NavParams, Platform } from "ionic-angular";
+import { AndroidPermissions } from "@ionic-native/android-permissions";
 declare var SMS: any;
 @Component({
-  selector: 'page-list',
-  templateUrl: 'list.html'
+  selector: "page-list",
+  templateUrl: "list.html"
 })
 
+/*  These are the following methods you can use for SMS plugin.
+
+    sendSMS(address(s), text, successCallback, failureCallback);
+
+    listSMS(filter, successCallback, failureCallback);
+
+    deleteSMS(filter, successCallback, failureCallback);
+
+    startWatch(successCallback, failureCallback);
+
+    stopWatch(successCallback, failureCallback);
+
+    enableIntercept(on_off, successCallback, failureCallback);
+
+    restoreSMS(msg_or_msgs, successCallback, failureCallback);
+
+    setOptions(options, successCallback, failureCallback);
+*/
 export class ListPage {
-  
-  selectedItem: any;
-  icons: string[];
   messages: any = [];
-  items: Array<{ title: string, note: string, icon: string }>;
+  readListSMS: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public androidPermissions: AndroidPermissions, public platform: Platform) {
-    // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public androidPermissions: AndroidPermissions,
+    public platform: Platform
+  ) {}
 
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-      'american-football', 'boat', 'bluetooth', 'build'];
+  ionViewWillEnter() {
+    this.androidPermissions
+      .checkPermission(this.androidPermissions.PERMISSION.READ_SMS)
+      .then(
+        success => console.log("Permission granted"),
+        err =>
+          this.androidPermissions.requestPermission(
+            this.androidPermissions.PERMISSION.READ_SMS
+          )
+      );
 
-    this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
+    this.androidPermissions.requestPermissions([
+      this.androidPermissions.PERMISSION.READ_SMS
+    ]);
+    this.ReadListSMS();
   }
 
-  itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push(ListPage, {
-      item: item
-    });
-  }
-
-  checkPermission() {
-    this.androidPermissions.checkPermission
-      (this.androidPermissions.PERMISSION.READ_SMS).then(
-        success => {
-
-          //if permission granted
-          this.ReadSMSList();
-        },
-        err => {
-
-          this.androidPermissions.requestPermission
-            (this.androidPermissions.PERMISSION.READ_SMS).
-            then(success => {
-              this.ReadSMSList();
-            },
-              err => {
-                alert("cancelled")
-              });
-        });
-
-    this.androidPermissions.requestPermissions
-      ([this.androidPermissions.PERMISSION.READ_SMS]);
-
-  }
-  ReadSMSList() {
-
-    this.platform.ready().then((readySource) => {
-
+  ReadListSMS() {
+    this.readListSMS = "came to ReadListSMS";
+    this.platform.ready().then(readySource => {
       let filter = {
-        box: 'inbox', // 'inbox' (default), 'sent', 'draft'
+        box: "inbox", // 'inbox' (default), 'sent', 'draft'
         indexFrom: 0, // start from index 0
-        maxCount: 20, // count of SMS to return each time
+        maxCount: 100 // count of SMS to return each time
       };
 
-      if (SMS) SMS.listSMS(filter, (ListSms) => {
-        this.messages = ListSms
-      },
+      if (SMS)
+        SMS.listSMS(
+          filter,
+          ListSms => {
+            for (let i = 0; i < ListSms.length; i++) {
+              let data = { address: ListSms[i].address, body: ListSms[i].body };
+              this.messages.push(data);
+            }
+            console.log("Sms", ListSms);
+          },
 
-        Error => {
-          alert(JSON.stringify(Error))
-        });
-
+          Error => {
+            this.readListSMS = Error;
+            console.log("error list sms: " + Error);
+          }
+        );
     });
   }
-
 }

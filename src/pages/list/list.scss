@@ -1,3 +1,8 @@
 page-list {
+    p{
+      word-break: break-all;
+      word-wrap: break-word;
+      overflow: auto;
 
+    }
 }
