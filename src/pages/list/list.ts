@@ -1,83 +1,70 @@
 import { Component } from "@angular/core";
 import { NavController, NavParams, Platform } from "ionic-angular";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
-declare var SMS: any;
+import { Storage } from "@ionic/storage";
 @Component({
   selector: "page-list",
   templateUrl: "list.html"
 })
-
-/*  These are the following methods you can use for SMS plugin.
-
-    sendSMS(address(s), text, successCallback, failureCallback);
-
-    listSMS(filter, successCallback, failureCallback);
-
-    deleteSMS(filter, successCallback, failureCallback);
-
-    startWatch(successCallback, failureCallback);
-
-    stopWatch(successCallback, failureCallback);
-
-    enableIntercept(on_off, successCallback, failureCallback);
-
-    restoreSMS(msg_or_msgs, successCallback, failureCallback);
-
-    setOptions(options, successCallback, failureCallback);
-*/
 export class ListPage {
-  messages: any = [];
-  readListSMS: any;
+  readSMSList: any;
+  segment = "messages";
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public androidPermissions: AndroidPermissions,
-    public platform: Platform
-  ) {}
-
-  ionViewWillEnter() {
-    this.androidPermissions
-      .checkPermission(this.androidPermissions.PERMISSION.READ_SMS)
-      .then(
-        success => console.log("Permission granted"),
-        err =>
-          this.androidPermissions.requestPermission(
-            this.androidPermissions.PERMISSION.READ_SMS
-          )
-      );
-
-    this.androidPermissions.requestPermissions([
-      this.androidPermissions.PERMISSION.READ_SMS
-    ]);
-    this.ReadListSMS();
+    public platform: Platform,
+    public storage: Storage
+  ) {
+    this.updateSMSView();
   }
 
-  ReadListSMS() {
-    this.readListSMS = "came to ReadListSMS";
-    this.platform.ready().then(readySource => {
-      let filter = {
-        box: "inbox", // 'inbox' (default), 'sent', 'draft'
-        indexFrom: 0, // start from index 0
-        maxCount: 100 // count of SMS to return each time
-      };
+  updateView() {
+    if (this.segment === "messages") {
+      this.updateSMSView();
+    } else {
+      this.updateCALLView();
+    }
+  }
 
-      if (SMS)
-        SMS.listSMS(
-          filter,
-          ListSms => {
-            for (let i = 0; i < ListSms.length; i++) {
-              let data = { address: ListSms[i].address, body: ListSms[i].body };
-              this.messages.push(data);
-            }
-            console.log("Sms", ListSms);
-          },
+  updateCALLView() {}
 
-          Error => {
-            this.readListSMS = Error;
-            console.log("error list sms: " + Error);
-          }
-        );
+  updateSMSView() {
+    this.storage.get("savedEmailedData").then(val => {
+      console.log(val);
+      if (val === null) {
+        this.readSMSList = [];
+      } else {
+        this.readSMSList = JSON.parse("[" + val + "]");
+        console.log(this.readSMSList);
+      }
+    });
+  }
+
+  removeEmailedSMS(index) {
+    console.log(index);
+    this.storage.get("savedEmailedData").then(val => {
+      if (val === null) {
+        this.readSMSList = [];
+      } else {
+        this.readSMSList = JSON.parse("[" + val + "]");
+        console.log(this.readSMSList);
+        this.readSMSList.splice(index, 1);
+        console.log(this.readSMSList);
+        console.log(JSON.stringify(this.readSMSList).slice(1, -1));
+        this.storage
+          .set(
+            "savedEmailedData",
+            JSON.stringify(this.readSMSList).slice(1, -1)
+          )
+          .then(_ => {
+            this.updateSMSView();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     });
   }
 }

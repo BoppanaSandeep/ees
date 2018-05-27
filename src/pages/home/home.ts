@@ -7,8 +7,29 @@ import {
   ToastController
 } from "ionic-angular";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
+import { Storage } from "@ionic/storage";
+import { shareComponent } from "../shared/share.component";
 
 declare var SMS: any;
+
+/*  These are the following methods you can use for SMS plugin.
+
+    sendSMS(address(s), text, successCallback, failureCallback);
+
+    listSMS(filter, successCallback, failureCallback);
+
+    deleteSMS(filter, successCallback, failureCallback);
+
+    startWatch(successCallback, failureCallback);
+
+    stopWatch(successCallback, failureCallback);
+
+    enableIntercept(on_off, successCallback, failureCallback);
+
+    restoreSMS(msg_or_msgs, successCallback, failureCallback);
+
+    setOptions(options, successCallback, failureCallback);
+*/
 
 @Component({
   selector: "page-home",
@@ -19,13 +40,27 @@ export class HomePage {
   Success;
   Failure;
   debug: any = [];
+  url = new shareComponent();
+  obj = {
+    address: "9573879057",
+    body: "HI, Button",
+    date_sent: "1527404584000",
+    date: "1527404584577",
+    read: 0,
+    seen: 0,
+    status: 0,
+    type: 1,
+    service_center: "+91984908700",
+    msg: "Email saved successfully"
+  };
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public androidPermissions: AndroidPermissions,
     public platform: Platform,
     public toast: ToastController,
-    public http: HttpClient
+    public http: HttpClient,
+    public storage: Storage
   ) {}
 
   ionViewWillEnter() {
@@ -42,58 +77,55 @@ export class HomePage {
     this.androidPermissions.requestPermissions([
       this.androidPermissions.PERMISSION.READ_SMS
     ]);
-    this.debug.push({ msg: "androidPermission" });
   }
 
   ionViewDidEnter() {
-    this.debug.push({ msg: "ionViewDidEnter" });
-    this.platform.ready().then(readySource => {
-      if (SMS)
-        SMS.startWatch(
-          () => {
-            this.Success = "Watching ....";
-            let toast = this.toast.create({
-              message: this.Success,
-              showCloseButton: true,
-              position: "middle"
-            });
+    this.platform
+      .ready()
+      .then(readySource => {
+        this.storage.get("watchSMSTrue").then(val => {
+          if (val === true) {
+            if (SMS)
+              SMS.startWatch(
+                () => {
+                  this.Success = "Watching ....";
+                  let toast = this.toast.create({
+                    message: this.Success,
+                    showCloseButton: true,
+                    position: "middle"
+                  });
 
-            toast.onDidDismiss(() => {
-              console.log("Dismissed toast");
-            });
+                  toast.present();
+                  console.log("watching started");
+                },
+                Error => {
+                  this.Failure = "Failed";
+                  let toast = this.toast.create({
+                    message: this.Failure,
+                    showCloseButton: true,
+                    position: "middle"
+                  });
 
-            toast.present();
-            console.log("watching started");
-          },
-          Error => {
-            this.Failure = "Failed";
-            let toast = this.toast.create({
-              message: this.Failure,
-              showCloseButton: true,
-              position: "middle"
-            });
+                  toast.present();
+                  console.log("failed to start watching");
+                }
+              );
 
-            toast.onDidDismiss(() => {
-              console.log("Dismissed toast");
+            document.addEventListener("onSMSArrive", (e: any) => {
+              var sms = e.data;
+              this.info = e.data;
+              this.sendEmail(e.data.address, e.data.body, e.data);
+              console.log(sms);
             });
-
-            toast.present();
-            console.log("failed to start watching");
           }
-        );
-
-      document.addEventListener("onSMSArrive", (e: any) => {
-        var sms = e.data;
-        this.info = e.data;
-        this.debug.push({ msg: JSON.stringify(e.data) });
-        this.sendEmail(e.data.address, e.data.body);
-        console.log(sms);
+        });
+      })
+      .catch(error => {
+        console.log(error);
       });
-    });
   }
 
-  sendEmail(address, body) {
-    this.debug.push({ msg: "Start send email" });
+  sendEmail(address, body, edata) {
     let params = {
       contact: address,
       msg_body: body,
@@ -107,28 +139,37 @@ export class HomePage {
       })
     };
     this.http
-      .post("http://192.168.43.54/phpmail/", params, httpOptions)
+      .post(this.url.email_url, params, httpOptions)
       .toPromise()
       .then(res => {
-        //console.log(res.status, res.json());
-        var status = JSON.stringify(res);
-        let toast = this.toast.create({
-          message: status,
-          showCloseButton: true,
-          position: "bottom"
-        });
-
-        toast.onDidDismiss(() => {
-          console.log("Dismissed toast");
-        });
-
-        toast.present();
-        this.debug.push(JSON.stringify(status));
+        console.log(res);
+        if (res["status"] == 200) {
+          let toast = this.toast.create({
+            message: res["msg"],
+            showCloseButton: false,
+            duration: 1000,
+            position: "bottom"
+          });
+          toast.present();
+          edata["msg"] = res["msg"];
+          this.saveEmailedData(edata);
+        }
       })
       .catch(error => {
-        this.debug.push(JSON.stringify(error));
         console.log(error);
       });
-    this.debug.push({ msg: "End send email" });
+  }
+
+  saveEmailedData(data) {
+    //this.storage.clear();
+    this.storage.get("savedEmailedData").then(val => {
+      console.log(val);
+      if (val === null) {
+        this.storage.set("savedEmailedData", JSON.stringify(data));
+      } else {
+        this.storage.set("savedEmailedData", val + "," + JSON.stringify(data));
+      }
+      console.log(JSON.parse("[" + val + "]"));
+    });
   }
 }

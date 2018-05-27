@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="primary">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
@@ -8,14 +8,13 @@
 </ion-header>
 
 <ion-content padding>
+  <!-- <button ion-button type="button" (click)="sendEmail('9573879057', 'HI, Button', obj)">Send email</button> -->
+  <!-- <button ion-button type="button" (click)="saveEmailedData(obj)">check</button> -->
   <div>
     <ion-row>
       <ion-col col-12>
         {{info}}
       </ion-col>
     </ion-row>
-  </div>
-  <div *ngFor="let d of debug">
-    <p>{{d.msg}}</p>
   </div>
 </ion-content>
