@@ -1,20 +1,23 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <button ion-button menuToggle>
+    <ion-navbar color="primary">
+        <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
+        <ion-title>Home</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <!-- <button ion-button type="button" (click)="sendEmail('9573879057', 'HI, Button', obj)">Send email</button> -->
-  <!-- <button ion-button type="button" (click)="saveEmailedData(obj)">check</button> -->
-  <div>
-    <ion-row>
-      <ion-col col-12>
-        {{info}}
-      </ion-col>
-    </ion-row>
-  </div>
+    <!-- <button ion-button type="button" (click)="sendEmail('9573879057', 'HI, Button', obj)">Send email</button> -->
+    <!-- <button ion-button type="button" (click)="saveEmailedData(obj)">check</button> -->
+    <div>
+        <ion-row>
+            <ion-col col-12>
+                <ion-input type="email" placeholder="Username" [(ngModel)]="emailId"></ion-input>
+            </ion-col>
+            <ion-col col-12>
+                <button ion-button block small (click)="addEmails()">Add Email</button>
+            </ion-col>
+        </ion-row>
+    </div>
 </ion-content>

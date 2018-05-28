@@ -36,7 +36,7 @@ declare var SMS: any;
   templateUrl: "home.html"
 })
 export class HomePage {
-  info;
+  emailId;
   Success;
   Failure;
   debug: any = [];
@@ -61,7 +61,7 @@ export class HomePage {
     public toast: ToastController,
     public http: HttpClient,
     public storage: Storage
-  ) {}
+  ) { }
 
   ionViewWillEnter() {
     this.androidPermissions
@@ -113,7 +113,6 @@ export class HomePage {
 
             document.addEventListener("onSMSArrive", (e: any) => {
               var sms = e.data;
-              this.info = e.data;
               this.sendEmail(e.data.address, e.data.body, e.data);
               console.log(sms);
             });
@@ -171,5 +170,9 @@ export class HomePage {
       }
       console.log(JSON.parse("[" + val + "]"));
     });
+  }
+
+  addEmails() {
+    console.log(this.emailId);
   }
 }

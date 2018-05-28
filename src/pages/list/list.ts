@@ -8,8 +8,7 @@ import { Storage } from "@ionic/storage";
 })
 export class ListPage {
   readSMSList: any;
-  segment = "messages";
-
+  segment = "Messages";
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -21,14 +20,14 @@ export class ListPage {
   }
 
   updateView() {
-    if (this.segment === "messages") {
+    if (this.segment === "Messages") {
       this.updateSMSView();
     } else {
       this.updateCALLView();
     }
   }
 
-  updateCALLView() {}
+  updateCALLView() { }
 
   updateSMSView() {
     this.storage.get("savedEmailedData").then(val => {
@@ -39,6 +38,7 @@ export class ListPage {
         this.readSMSList = JSON.parse("[" + val + "]");
         console.log(this.readSMSList);
       }
+      console.log(this.readSMSList);
     });
   }
 

@@ -13,7 +13,10 @@ export class SettingsPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public storage: Storage
-  ) {
+  ) { }
+
+  ionViewDidLoad() {
+    console.log("ionViewDidLoad SettingsPage");
     this.storage.get("watchSMSTrue").then(val => {
       if (val === null) {
         this.watchSMS = true;
@@ -23,14 +26,10 @@ export class SettingsPage {
         this.watchSMS = val;
       }
     });
-  }
-
-  ionViewDidLoad() {
-    console.log("ionViewDidLoad SettingsPage");
-
     this.storage.get("savedEmailedData").then(val => {
       if (val === null) {
         this.clearDisable = true;
+        console.log("clearDisable", true);
       }
     });
   }
@@ -49,6 +48,8 @@ export class SettingsPage {
   }
 
   clearEmailedSMS() {
-    this.storage.set("savedEmailedData", null);
+    this.storage.set("savedEmailedData", null).then(val => {
+      this.clearDisable = true;
+    }).catch(error => { });
   }
 }
