@@ -8,16 +8,54 @@
 </ion-header>
 
 <ion-content padding>
-    <!-- <button ion-button type="button" (click)="sendEmail('9573879057', 'HI, Button', obj)">Send email</button> -->
+    <!-- <button ion-button type="button" (click)="sendEmail('7896325410', 'HI, Button', obj)">Send email</button> -->
     <!-- <button ion-button type="button" (click)="saveEmailedData(obj)">check</button> -->
-    <div>
+    <ion-label color="primary">
+        Add Email to your send notification list.
+    </ion-label>
+    <form [formGroup]="saveEmailsWithOptions" (ngSubmit)="ngAddEmails()">
         <ion-row>
             <ion-col col-12>
-                <ion-input type="email" placeholder="Username" [(ngModel)]="emailId"></ion-input>
+                <ion-item>
+                    <ion-input type="email" placeholder="Email id" formControlName="emailId"></ion-input>
+                </ion-item>
             </ion-col>
             <ion-col col-12>
-                <button ion-button block small (click)="addEmails()">Add Email</button>
+                <ion-item>
+                    <ion-label>Enable this email</ion-label>
+                    <ion-toggle checked="false" formControlName="enableEmailOrnot"></ion-toggle>
+                </ion-item>
+            </ion-col>
+            <ion-col col-12>
+                <button ion-button block small type="submit" (click)="addEmails()" [disabled]="!saveEmailsWithOptions.valid">Add Email</button>
             </ion-col>
         </ion-row>
+    </form>
+
+    <ion-label color="primary">
+        Added Email's to send notifications.
+    </ion-label>
+    <div *ngIf="readSavedEmails?.length > 0; else dataNotFound">
+        <div *ngFor="let e of readSavedEmails, let i = index">
+            <ion-row>
+                <ion-col col-10>
+                    <h6>{{e.emailId}}</h6>
+                    <p>{{e.enableEmailOrnot == true ? "Enabled":"Disabled" }}</p>
+                </ion-col>
+                <ion-col col-2>
+                    <button ion-button item-end color="danger" small (click)="removeEmailsFromStorage(i)">
+                      <ion-icon name="close"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </div>
     </div>
+    <ng-template #dataNotFound>
+        <ion-row>
+            <ion-col col-12>
+                <span>You have not added any emails to send notifications to your mail.</span>
+            </ion-col>
+        </ion-row>
+    </ng-template>
+
 </ion-content>

@@ -24,7 +24,15 @@
             <ion-label>Clear Emailed SMS</ion-label>
         </ion-col>
         <ion-col col-3>
-            <button ion-button clear [disabled]="clearDisable" (click)="clearEmailedSMS()">Clear</button>
+            <button ion-button clear [disabled]="clearDisableForSMS" (click)="clearEmailedSMS()">Clear</button>
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col col-9>
+            <ion-label>Clear Saved Emails</ion-label>
+        </ion-col>
+        <ion-col col-3>
+            <button ion-button clear [disabled]="clearDisableForSavedEmails" (click)="clearSavedEmails()">Clear</button>
         </ion-col>
     </ion-row>
 </ion-content>

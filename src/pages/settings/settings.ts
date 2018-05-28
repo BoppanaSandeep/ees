@@ -8,7 +8,8 @@ import { Storage } from "@ionic/storage";
 })
 export class SettingsPage {
   watchSMS: boolean;
-  clearDisable: boolean;
+  clearDisableForSMS: boolean;
+  clearDisableForSavedEmails: boolean;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -26,10 +27,18 @@ export class SettingsPage {
         this.watchSMS = val;
       }
     });
+
     this.storage.get("savedEmailedData").then(val => {
       if (val === null) {
-        this.clearDisable = true;
-        console.log("clearDisable", true);
+        this.clearDisableForSMS = true;
+        console.log("clearDisableForSMS", true);
+      }
+    });
+
+    this.storage.get("saveEmailsWithOptions").then(val => {
+      if (val === null) {
+        this.clearDisableForSavedEmails = true;
+        console.log("clearDisableForSavedEmails", true);
       }
     });
   }
@@ -49,7 +58,13 @@ export class SettingsPage {
 
   clearEmailedSMS() {
     this.storage.set("savedEmailedData", null).then(val => {
-      this.clearDisable = true;
-    }).catch(error => { });
+      this.clearDisableForSMS = true;
+    }).catch(error => { console.log(error); });
+  }
+
+  clearSavedEmails() {
+    this.storage.set("saveEmailsWithOptions", null).then(val => {
+      this.clearDisableForSavedEmails = true;
+    }).catch(error => { console.log(error); });
   }
 }

@@ -16,6 +16,10 @@ ion-header {
     background: color($colors, primary);
 }
 
+page-home ion-item {
+    padding-left: 0 !important
+}
+
 page-list ion-segment {
     background: color($colors, light);
 }

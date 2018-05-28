@@ -6,6 +6,7 @@ import {
   Platform,
   ToastController
 } from "ionic-angular";
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { Storage } from "@ionic/storage";
 import { shareComponent } from "../shared/share.component";
@@ -36,7 +37,6 @@ declare var SMS: any;
   templateUrl: "home.html"
 })
 export class HomePage {
-  emailId;
   Success;
   Failure;
   debug: any = [];
@@ -53,6 +53,8 @@ export class HomePage {
     service_center: "+91984908700",
     msg: "Email saved successfully"
   };
+  public saveEmailsWithOptions: FormGroup;
+  public readSavedEmails;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -60,8 +62,14 @@ export class HomePage {
     public platform: Platform,
     public toast: ToastController,
     public http: HttpClient,
-    public storage: Storage
-  ) { }
+    public storage: Storage,
+    public formBuilder: FormBuilder
+  ) {
+    this.saveEmailsWithOptions = this.formBuilder.group({
+      emailId: ['', [Validators.required, Validators.email]],
+      enableEmailOrnot: [false, [Validators.required]],
+    });
+  }
 
   ionViewWillEnter() {
     this.androidPermissions
@@ -77,6 +85,7 @@ export class HomePage {
     this.androidPermissions.requestPermissions([
       this.androidPermissions.PERMISSION.READ_SMS
     ]);
+    this.readEmailsFromStorage();
   }
 
   ionViewDidEnter() {
@@ -92,7 +101,8 @@ export class HomePage {
                   let toast = this.toast.create({
                     message: this.Success,
                     showCloseButton: true,
-                    position: "middle"
+                    duration: 10000,
+                    position: "bottom"
                   });
 
                   toast.present();
@@ -103,7 +113,8 @@ export class HomePage {
                   let toast = this.toast.create({
                     message: this.Failure,
                     showCloseButton: true,
-                    position: "middle"
+                    duration: 10000,
+                    position: "bottom"
                   });
 
                   toast.present();
@@ -172,7 +183,77 @@ export class HomePage {
     });
   }
 
+  ngAddEmails() { }
+
   addEmails() {
-    console.log(this.emailId);
+    console.log(this.saveEmailsWithOptions.value);
+    this.storage.get("saveEmailsWithOptions").then(val => {
+      if (val === null) {
+        this.storage.set("saveEmailsWithOptions", JSON.stringify(this.saveEmailsWithOptions.value)).then(val => {
+          console.log(val);
+          this.clearEmailSavingForm();
+          this.readEmailsFromStorage();
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        this.storage.set("saveEmailsWithOptions", val + "," + JSON.stringify(this.saveEmailsWithOptions.value)).then(val => {
+          console.log(val);
+          this.clearEmailSavingForm();
+          this.readEmailsFromStorage();
+        }).catch(error => {
+          console.log(error);
+        });
+      }
+    }).catch(error => {
+      console.log(error);
+    });
   }
+
+  clearEmailSavingForm() {
+    this.saveEmailsWithOptions = this.formBuilder.group({
+      emailId: ['', [Validators.required, Validators.email]],
+      enableEmailOrnot: [false, [Validators.required]],
+    });
+  }
+
+  readEmailsFromStorage() {
+    this.storage.get("saveEmailsWithOptions").then(val => {
+      console.log(val);
+      if (val === null) {
+        this.readSavedEmails = [];
+        console.log(this.readSavedEmails);
+      } else {
+        this.readSavedEmails = JSON.parse("[" + val + "]");
+        console.log(this.readSavedEmails);
+      }
+    });
+  }
+
+  removeEmailsFromStorage(index) {
+    console.log(index);
+    this.storage.get("saveEmailsWithOptions").then(val => {
+      if (val === null) {
+        this.readSavedEmails = [];
+      } else {
+        this.readSavedEmails = JSON.parse("[" + val + "]");
+        console.log(this.readSavedEmails);
+        this.readSavedEmails.splice(index, 1);
+        console.log(this.readSavedEmails);
+        console.log(JSON.stringify(this.readSavedEmails).slice(1, -1));
+        this.storage
+          .set(
+            "saveEmailsWithOptions",
+            JSON.stringify(this.readSavedEmails).slice(1, -1)
+          )
+          .then(_ => {
+            this.readEmailsFromStorage();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    });
+  }
+
 }
