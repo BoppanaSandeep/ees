@@ -37,8 +37,7 @@ declare var SMS: any;
   templateUrl: "home.html"
 })
 export class HomePage {
-  Success;
-  Failure;
+  WatchingSMS: boolean;
   debug: any = [];
   url = new shareComponent();
   obj = {
@@ -97,36 +96,33 @@ export class HomePage {
             if (SMS)
               SMS.startWatch(
                 () => {
-                  this.Success = "Watching ....";
-                  let toast = this.toast.create({
-                    message: this.Success,
-                    showCloseButton: true,
-                    duration: 10000,
-                    position: "bottom"
-                  });
-
-                  toast.present();
+                  this.WatchingSMS = true;
                   console.log("watching started");
                 },
                 Error => {
-                  this.Failure = "Failed";
-                  let toast = this.toast.create({
-                    message: this.Failure,
-                    showCloseButton: true,
-                    duration: 10000,
-                    position: "bottom"
-                  });
-
-                  toast.present();
+                  this.WatchingSMS = false;
                   console.log("failed to start watching");
                 }
               );
 
             document.addEventListener("onSMSArrive", (e: any) => {
               var sms = e.data;
-              this.sendEmail(e.data.address, e.data.body, e.data);
               console.log(sms);
+              this.storage.get("saveEmailsWithOptions").then(val => {
+                if (val === null) {
+                } else {
+                  var readSavedEmails = JSON.parse("[" + val + "]");
+                  console.log(readSavedEmails);
+                  var appendedEmails = '';
+                  readSavedEmails.forEach((emails, index) => {
+                    appendedEmails += index == (readSavedEmails.length - 1) ? emails.emailId : emails.emailId + ', ';
+                  });
+                  this.sendEmail(e.data.address, e.data.body, appendedEmails, e.data);
+                }
+              });
             });
+          } else {
+            this.WatchingSMS = false;
           }
         });
       })
@@ -135,11 +131,11 @@ export class HomePage {
       });
   }
 
-  sendEmail(address, body, edata) {
+  sendEmail(phoneNumber, body, emails, edata) {
     let params = {
-      contact: address,
+      contact: phoneNumber,
       msg_body: body,
-      email: "boppanasandeep57@gmail.com"
+      email: emails
     };
     const httpOptions = {
       headers: new HttpHeaders({
@@ -240,7 +236,7 @@ export class HomePage {
         console.log(this.readSavedEmails);
         this.readSavedEmails.splice(index, 1);
         console.log(this.readSavedEmails);
-        console.log(JSON.stringify(this.readSavedEmails).slice(1, -1));
+        console.log('For identifing whether "[","]" are removed or not ...', JSON.stringify(this.readSavedEmails).slice(1, -1));
         this.storage
           .set(
             "saveEmailsWithOptions",
@@ -256,4 +252,29 @@ export class HomePage {
     });
   }
 
+  enableOrDisableEmailsFromStorage(index, boolValue) {
+    console.log(index);
+    this.storage.get("saveEmailsWithOptions").then(val => {
+      if (val === null) {
+        this.readSavedEmails = [];
+      } else {
+        this.readSavedEmails = JSON.parse("[" + val + "]");
+        console.log(this.readSavedEmails);
+        this.readSavedEmails[index].enableEmailOrnot = boolValue == true ? false : true;
+        console.log(this.readSavedEmails);
+        console.log('For identifing whether "[","]" are removed or not ...', JSON.stringify(this.readSavedEmails).slice(1, -1));
+        this.storage
+          .set(
+            "saveEmailsWithOptions",
+            JSON.stringify(this.readSavedEmails).slice(1, -1)
+          )
+          .then(_ => {
+            this.readEmailsFromStorage();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    });
+  }
 }

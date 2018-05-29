@@ -1,9 +1,9 @@
 <ion-header>
     <ion-navbar color="primary">
         <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-        <ion-title>Home</ion-title>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Home <span float-right><small>{{WatchingSMS == true ? "Watching ..." : "Not watching ..."}}</small></span></ion-title>
     </ion-navbar>
 </ion-header>
 
@@ -38,13 +38,16 @@
     <div *ngIf="readSavedEmails?.length > 0; else dataNotFound">
         <div *ngFor="let e of readSavedEmails, let i = index">
             <ion-row>
-                <ion-col col-10>
+                <ion-col col-2>
+                    <ion-checkbox color="secondary" checked="{{e.enableEmailOrnot}}" (ionChange)="enableOrDisableEmailsFromStorage(i, e.enableEmailOrnot)"></ion-checkbox>
+                </ion-col>
+                <ion-col col-8>
                     <h6>{{e.emailId}}</h6>
                     <p>{{e.enableEmailOrnot == true ? "Enabled":"Disabled" }}</p>
                 </ion-col>
                 <ion-col col-2>
                     <button ion-button item-end color="danger" small (click)="removeEmailsFromStorage(i)">
-                      <ion-icon name="close"></ion-icon>
+                        <ion-icon name="close"></ion-icon>
                     </button>
                 </ion-col>
             </ion-row>
@@ -53,9 +56,8 @@
     <ng-template #dataNotFound>
         <ion-row>
             <ion-col col-12>
-                <span>You have not added any emails to send notifications to your mail.</span>
+                <span>You have not added any emails to send notifications.</span>
             </ion-col>
         </ion-row>
     </ng-template>
-
 </ion-content>
