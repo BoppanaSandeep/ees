@@ -27,7 +27,7 @@ export class ListPage {
     }
   }
 
-  updateCALLView() { }
+  updateCALLView() {}
 
   updateSMSView() {
     this.storage.get("savedEmailedData").then(val => {
@@ -53,17 +53,28 @@ export class ListPage {
         this.readSMSList.splice(index, 1);
         console.log(this.readSMSList);
         console.log(JSON.stringify(this.readSMSList).slice(1, -1));
-        this.storage
-          .set(
-            "savedEmailedData",
-            JSON.stringify(this.readSMSList).slice(1, -1)
-          )
-          .then(_ => {
-            this.updateSMSView();
-          })
-          .catch(error => {
-            console.log(error);
-          });
+        if (this.readSMSList.length > 1) {
+          this.storage
+            .set(
+              "savedEmailedData",
+              JSON.stringify(this.readSMSList).slice(1, -1)
+            )
+            .then(_ => {
+              this.updateSMSView();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        } else {
+          this.storage
+            .set("savedEmailedData", null)
+            .then(_ => {
+              this.updateSMSView();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
       }
     });
   }

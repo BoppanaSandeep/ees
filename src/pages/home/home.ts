@@ -6,7 +6,7 @@ import {
   Platform,
   ToastController
 } from "ionic-angular";
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from "@angular/forms";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { Storage } from "@ionic/storage";
 import { shareComponent } from "../shared/share.component";
@@ -65,8 +65,8 @@ export class HomePage {
     public formBuilder: FormBuilder
   ) {
     this.saveEmailsWithOptions = this.formBuilder.group({
-      emailId: ['', [Validators.required, Validators.email]],
-      enableEmailOrnot: [false, [Validators.required]],
+      emailId: ["", [Validators.required, Validators.email]],
+      enableEmailOrnot: [false, [Validators.required]]
     });
   }
 
@@ -113,11 +113,19 @@ export class HomePage {
                 } else {
                   var readSavedEmails = JSON.parse("[" + val + "]");
                   console.log(readSavedEmails);
-                  var appendedEmails = '';
+                  var appendedEmails = "";
                   readSavedEmails.forEach((emails, index) => {
-                    appendedEmails += index == (readSavedEmails.length - 1) ? emails.emailId : emails.emailId + ', ';
+                    appendedEmails +=
+                      index == readSavedEmails.length - 1
+                        ? emails.emailId
+                        : emails.emailId + ", ";
                   });
-                  this.sendEmail(e.data.address, e.data.body, appendedEmails, e.data);
+                  this.sendEmail(
+                    e.data.address,
+                    e.data.body,
+                    appendedEmails,
+                    e.data
+                  );
                 }
               });
             });
@@ -179,37 +187,52 @@ export class HomePage {
     });
   }
 
-  ngAddEmails() { }
+  ngAddEmails() {}
 
   addEmails() {
     console.log(this.saveEmailsWithOptions.value);
-    this.storage.get("saveEmailsWithOptions").then(val => {
-      if (val === null) {
-        this.storage.set("saveEmailsWithOptions", JSON.stringify(this.saveEmailsWithOptions.value)).then(val => {
-          console.log(val);
-          this.clearEmailSavingForm();
-          this.readEmailsFromStorage();
-        }).catch(error => {
-          console.log(error);
-        });
-      } else {
-        this.storage.set("saveEmailsWithOptions", val + "," + JSON.stringify(this.saveEmailsWithOptions.value)).then(val => {
-          console.log(val);
-          this.clearEmailSavingForm();
-          this.readEmailsFromStorage();
-        }).catch(error => {
-          console.log(error);
-        });
-      }
-    }).catch(error => {
-      console.log(error);
-    });
+    this.storage
+      .get("saveEmailsWithOptions")
+      .then(val => {
+        if (val === null) {
+          this.storage
+            .set(
+              "saveEmailsWithOptions",
+              JSON.stringify(this.saveEmailsWithOptions.value)
+            )
+            .then(val => {
+              console.log(val);
+              this.clearEmailSavingForm();
+              this.readEmailsFromStorage();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        } else {
+          this.storage
+            .set(
+              "saveEmailsWithOptions",
+              val + "," + JSON.stringify(this.saveEmailsWithOptions.value)
+            )
+            .then(val => {
+              console.log(val);
+              this.clearEmailSavingForm();
+              this.readEmailsFromStorage();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   clearEmailSavingForm() {
     this.saveEmailsWithOptions = this.formBuilder.group({
-      emailId: ['', [Validators.required, Validators.email]],
-      enableEmailOrnot: [false, [Validators.required]],
+      emailId: ["", [Validators.required, Validators.email]],
+      enableEmailOrnot: [false, [Validators.required]]
     });
   }
 
@@ -236,18 +259,34 @@ export class HomePage {
         console.log(this.readSavedEmails);
         this.readSavedEmails.splice(index, 1);
         console.log(this.readSavedEmails);
-        console.log('For identifing whether "[","]" are removed or not ...', JSON.stringify(this.readSavedEmails).slice(1, -1));
-        this.storage
-          .set(
-            "saveEmailsWithOptions",
-            JSON.stringify(this.readSavedEmails).slice(1, -1)
-          )
-          .then(_ => {
-            this.readEmailsFromStorage();
-          })
-          .catch(error => {
-            console.log(error);
-          });
+        console.log(
+          'For identifing whether "[","]" are removed or not at remove emails...',
+          JSON.stringify(this.readSavedEmails).slice(1, -1)
+        );
+        if (this.readSavedEmails.length > 1) {
+          this.storage
+            .set(
+              "saveEmailsWithOptions",
+              JSON.stringify(this.readSavedEmails).slice(1, -1)
+            )
+            .then(_ => {
+              console.log("remove the email from storage ... ", _);
+              this.readEmailsFromStorage();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        } else {
+          this.storage
+            .set("saveEmailsWithOptions", null)
+            .then(_ => {
+              console.log("remove the email from storage ... ", _);
+              this.readEmailsFromStorage();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
       }
     });
   }
@@ -260,15 +299,20 @@ export class HomePage {
       } else {
         this.readSavedEmails = JSON.parse("[" + val + "]");
         console.log(this.readSavedEmails);
-        this.readSavedEmails[index].enableEmailOrnot = boolValue == true ? false : true;
+        this.readSavedEmails[index].enableEmailOrnot =
+          boolValue == true ? false : true;
         console.log(this.readSavedEmails);
-        console.log('For identifing whether "[","]" are removed or not ...', JSON.stringify(this.readSavedEmails).slice(1, -1));
+        console.log(
+          'For identifing whether "[","]" are removed or not at enable disable emails...',
+          JSON.stringify(this.readSavedEmails).slice(1, -1)
+        );
         this.storage
           .set(
             "saveEmailsWithOptions",
             JSON.stringify(this.readSavedEmails).slice(1, -1)
           )
           .then(_ => {
+            console.log("Enable or disable event ... ", _);
             this.readEmailsFromStorage();
           })
           .catch(error => {
