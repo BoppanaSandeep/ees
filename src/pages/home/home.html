@@ -37,20 +37,20 @@
     </ion-label>
     <div *ngIf="readSavedEmails?.length > 0; else dataNotFound">
         <div *ngFor="let e of readSavedEmails, let i = index">
-            <ion-row>
-                <ion-col col-2>
-                    <ion-checkbox color="secondary" checked="{{e.enableEmailOrnot}}" (ionChange)="enableOrDisableEmailsFromStorage(i, e.enableEmailOrnot)"></ion-checkbox>
-                </ion-col>
-                <ion-col col-8>
-                    <h6>{{e.emailId}}</h6>
-                    <p>{{e.enableEmailOrnot == true ? "Enabled":"Disabled" }}</p>
-                </ion-col>
-                <ion-col col-2>
-                    <button ion-button item-end color="danger" small (click)="removeEmailsFromStorage(i)">
-                        <ion-icon name="close"></ion-icon>
-                    </button>
-                </ion-col>
-            </ion-row>
+            <ion-list>
+                <ion-item-sliding #item>
+                    <ion-item>
+                        <h6 class="{{e.enableEmailOrnot == true ? 'limegreen':'indianred'}}">{{e.emailId}}</h6>
+                    </ion-item>
+                    <ion-item-options side="left">
+                        <button ion-button text-capitalize color="primary" (click)="enableOrDisableEmailsFromStorage(i, e.enableEmailOrnot)">{{e.enableEmailOrnot == true ? "Disable" : "Enable" }}</button>
+                    </ion-item-options>
+
+                    <ion-item-options side="right">
+                        <button ion-button text-capitalize color="danger" small (click)="removeEmailsFromStorage(i)">Delete</button>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </ion-list>
         </div>
     </div>
     <ng-template #dataNotFound>
