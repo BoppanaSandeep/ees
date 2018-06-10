@@ -1,3 +1,3 @@
 export class shareComponent {
-  public email_url = "http://10.0.0.155/phpmail/";
+  public email_url = "http://198.168.0.114/phpmail/";
 }

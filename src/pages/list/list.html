@@ -1,41 +1,41 @@
 <ion-header>
-    <ion-navbar color="primary">
-        <button ion-button menuToggle>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-        <ion-title>Recorded List</ion-title>
-    </ion-navbar>
+    <ion-title>Recorded List</ion-title>
+  </ion-navbar>
 </ion-header>
 
 <ion-content>
-    <ion-segment [(ngModel)]="segment" color="primary" (ionChange)="updateView()">
-        <ion-segment-button value="Messages">
-            <ion-icon name="chatboxes"></ion-icon>
-        </ion-segment-button>
-        <ion-segment-button disabled value="Calls">
-            <ion-icon name="call"></ion-icon>
-        </ion-segment-button>
-    </ion-segment>
-    <div *ngIf="readSMSList?.length > 0; else dataNotFound">
-        <div *ngFor="let d of readSMSList, let i = index">
-            <ion-row>
-                <ion-col col-10>
-                    <h6>{{d.address}}</h6>
-                    <p>{{d.body}}</p>
-                </ion-col>
-                <ion-col col-2>
-                    <button ion-button item-end color="danger" small (click)="removeEmailedSMS(i)">
-                      <ion-icon name="close"></ion-icon>
-                    </button>
-                </ion-col>
-            </ion-row>
-        </div>
+  <ion-segment [(ngModel)]="segment" color="primary" (ionChange)="updateView()">
+    <ion-segment-button value="Messages">
+      <ion-icon name="chatboxes"></ion-icon>
+    </ion-segment-button>
+    <ion-segment-button disabled value="Calls">
+      <ion-icon name="call"></ion-icon>
+    </ion-segment-button>
+  </ion-segment>
+  <div *ngIf="readSMSList?.length > 0; else dataNotFound">
+    <div *ngFor="let d of readSMSList, let i = index">
+      <ion-list>
+        <ion-item-sliding #item>
+          <ion-item>
+            <h6 class="indianred">{{d.address}}</h6>
+            <p>{{d.body}}</p>
+          </ion-item>
+          <ion-item-options side="right">
+            <button ion-button text-capitalize color="danger" small (click)="removeEmailedSMS(i)">Delete</button>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
     </div>
-    <ng-template #dataNotFound>
-        <ion-row>
-            <ion-col col-12>
-                <span>{{segment}} list is empty.</span>
-            </ion-col>
-        </ion-row>
-    </ng-template>
+  </div>
+  <ng-template #dataNotFound>
+    <ion-row>
+      <ion-col col-12>
+        <span class="indianred">{{segment}} list is empty.</span>
+      </ion-col>
+    </ion-row>
+  </ng-template>
 </ion-content>

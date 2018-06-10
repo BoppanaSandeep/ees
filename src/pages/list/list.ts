@@ -53,7 +53,7 @@ export class ListPage {
         this.readSMSList.splice(index, 1);
         console.log(this.readSMSList);
         console.log(JSON.stringify(this.readSMSList).slice(1, -1));
-        if (this.readSMSList.length > 1) {
+        if (this.readSMSList.length > 0) {
           this.storage
             .set(
               "savedEmailedData",

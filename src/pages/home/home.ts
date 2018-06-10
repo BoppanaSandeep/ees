@@ -170,6 +170,14 @@ export class HomePage {
         }
       })
       .catch(error => {
+        // this.saveEmailedData(edata);
+        let toast = this.toast.create({
+          message: "Something went wrong!!!",
+          showCloseButton: false,
+          duration: 2000,
+          position: "bottom"
+        });
+        toast.present();
         console.log(error);
       });
   }
@@ -263,7 +271,7 @@ export class HomePage {
           'For identifing whether "[","]" are removed or not at remove emails...',
           JSON.stringify(this.readSavedEmails).slice(1, -1)
         );
-        if (this.readSavedEmails.length > 1) {
+        if (this.readSavedEmails.length > 0) {
           this.storage
             .set(
               "saveEmailsWithOptions",
