@@ -1,67 +1,68 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <button ion-button menuToggle>
+    <ion-navbar color="primary">
+        <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home
-      <span float-right>
+        <ion-title>Home
+            <span float-right>
         <small>{{WatchingSMS == true ? "Watching ..." : "Not watching ..."}}</small>
       </span>
-    </ion-title>
-  </ion-navbar>
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <!-- <button ion-button type="button" (click)="sendEmail('7896325410', 'HI, Button', 'boppanasandeep57@gmail.com', obj)">Send email</button> -->
-  <!-- <button ion-button type="button" (click)="saveEmailedData(obj)">check</button> -->
-  <ion-label color="primary">
-    Add Email to your send notification list.
-  </ion-label>
-  <form [formGroup]="saveEmailsWithOptions" (ngSubmit)="ngAddEmails()">
-    <ion-row>
-      <ion-col col-12>
-        <ion-item>
-          <ion-input type="email" placeholder="Email id" formControlName="emailId"></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col col-12>
-        <ion-item>
-          <ion-label>Enable this email</ion-label>
-          <ion-toggle checked="false" formControlName="enableEmailOrnot"></ion-toggle>
-        </ion-item>
-      </ion-col>
-      <ion-col col-12>
-        <button ion-button block small type="submit" (click)="addEmails()" [disabled]="!saveEmailsWithOptions.valid">Add Email</button>
-      </ion-col>
-    </ion-row>
-  </form>
+    <!-- {{readMissedCalls}} -->
+    <!-- <button ion-button type="button" (click)="sendEmail('7896325410', 'HI, Button', 'boppanasandeep57@gmail.com', obj)">Send email</button> -->
+    <!-- <button ion-button type="button" (click)="saveEmailedData(obj)">check</button> -->
+    <ion-label color="primary">
+        Add Email to your send notification list.
+    </ion-label>
+    <form [formGroup]="saveEmailsWithOptions" (ngSubmit)="ngAddEmails()">
+        <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-input type="email" placeholder="Email id" formControlName="emailId"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label>Enable this email</ion-label>
+                    <ion-toggle checked="false" formControlName="enableEmailOrnot"></ion-toggle>
+                </ion-item>
+            </ion-col>
+            <ion-col col-12>
+                <button ion-button block small type="submit" (click)="addEmails()" [disabled]="!saveEmailsWithOptions.valid">Add Email</button>
+            </ion-col>
+        </ion-row>
+    </form>
 
-  <ion-label color="primary">
-    Added Email's to send notifications.
-  </ion-label>
-  <div *ngIf="readSavedEmails?.length > 0; else dataNotFound">
-    <div *ngFor="let e of readSavedEmails, let i = index">
-      <ion-list>
-        <ion-item-sliding #item>
-          <ion-item>
-            <h6 class="{{e.enableEmailOrnot == true ? 'limegreen':'indianred'}}">{{e.emailId}}</h6>
-          </ion-item>
-          <ion-item-options side="left">
-            <button ion-button text-capitalize color="primary" (click)="enableOrDisableEmailsFromStorage(i, e.enableEmailOrnot)">{{e.enableEmailOrnot == true ? "Disable" : "Enable" }}</button>
-          </ion-item-options>
+    <ion-label color="primary">
+        Added Email's to send notifications.
+    </ion-label>
+    <div *ngIf="readSavedEmails?.length > 0; else dataNotFound">
+        <div *ngFor="let e of readSavedEmails, let i = index">
+            <ion-list>
+                <ion-item-sliding #item>
+                    <ion-item>
+                        <h6 class="{{e.enableEmailOrnot == true ? 'limegreen':'indianred'}}">{{e.emailId}}</h6>
+                    </ion-item>
+                    <ion-item-options side="left">
+                        <button ion-button text-capitalize color="primary" (click)="enableOrDisableEmailsFromStorage(i, e.enableEmailOrnot)">{{e.enableEmailOrnot == true ? "Disable" : "Enable" }}</button>
+                    </ion-item-options>
 
-          <ion-item-options side="right">
-            <button ion-button text-capitalize color="danger" small (click)="removeEmailsFromStorage(i)">Delete</button>
-          </ion-item-options>
-        </ion-item-sliding>
-      </ion-list>
+                    <ion-item-options side="right">
+                        <button ion-button text-capitalize color="danger" small (click)="removeEmailsFromStorage(i)">Delete</button>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </ion-list>
+        </div>
     </div>
-  </div>
-  <ng-template #dataNotFound>
-    <ion-row>
-      <ion-col col-12>
-        <span class="indianred">You have not added any emails to send notifications.</span>
-      </ion-col>
-    </ion-row>
-  </ng-template>
+    <ng-template #dataNotFound>
+        <ion-row>
+            <ion-col col-12>
+                <span class="indianred">You have not added any emails to send notifications.</span>
+            </ion-col>
+        </ion-row>
+    </ng-template>
 </ion-content>

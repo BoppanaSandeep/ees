@@ -8,13 +8,14 @@ import { Storage } from "@ionic/storage";
 })
 export class SettingsPage {
   watchSMS: boolean;
+  watchCallLog: boolean;
   clearDisableForSMS: boolean;
   clearDisableForSavedEmails: boolean;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public storage: Storage
-  ) { }
+  ) {}
 
   ionViewDidLoad() {
     console.log("ionViewDidLoad SettingsPage");
@@ -25,6 +26,16 @@ export class SettingsPage {
       } else {
         console.log(val);
         this.watchSMS = val;
+      }
+    });
+
+    this.storage.get("watchMissedCallsTrue").then(val => {
+      if (val === null) {
+        this.watchCallLog = true;
+        this.storage.set("watchMissedCallsTrue", true);
+      } else {
+        console.log(val);
+        this.watchCallLog = val;
       }
     });
 
@@ -56,15 +67,38 @@ export class SettingsPage {
       });
   }
 
+  disableWatchCallLog(watchCallLog) {
+    console.log(watchCallLog);
+    watchCallLog = watchCallLog == false ? true : false;
+    this.storage
+      .set("watchMissedCallsTrue", watchCallLog)
+      .then(val => {
+        console.log(val);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   clearEmailedSMS() {
-    this.storage.set("savedEmailedData", null).then(val => {
-      this.clearDisableForSMS = true;
-    }).catch(error => { console.log(error); });
+    this.storage
+      .set("savedEmailedData", null)
+      .then(val => {
+        this.clearDisableForSMS = true;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   clearSavedEmails() {
-    this.storage.set("saveEmailsWithOptions", null).then(val => {
-      this.clearDisableForSavedEmails = true;
-    }).catch(error => { console.log(error); });
+    this.storage
+      .set("saveEmailsWithOptions", null)
+      .then(val => {
+        this.clearDisableForSavedEmails = true;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 }

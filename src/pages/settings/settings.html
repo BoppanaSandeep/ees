@@ -21,6 +21,14 @@
     </ion-row>
     <ion-row>
         <ion-col col-9>
+            <ion-label>Enable Missed Calls watch</ion-label>
+        </ion-col>
+        <ion-col col-3>
+            <ion-toggle checked="{{watchCallLog}}" (ionChange)="disableWatchCallLog(watchCallLog)"></ion-toggle>
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col col-9>
             <ion-label>Clear Emailed SMS</ion-label>
         </ion-col>
         <ion-col col-3>

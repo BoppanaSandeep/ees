@@ -39,11 +39,20 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      //this.splashScreen.hide();
     });
+
+    // Set SMS watch to true for the first time.
     this.storage.get("watchSMSTrue").then(val => {
       if (val === null) {
         this.storage.set("watchSMSTrue", true);
+      }
+    });
+
+    // Set Call log watch to true for the first time.
+    this.storage.get("watchMissedCallsTrue").then(value => {
+      if (value === null) {
+        this.storage.set("watchMissedCallsTrue", true);
       }
     });
   }

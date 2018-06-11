@@ -12,6 +12,7 @@ import { SplashScreen } from "@ionic-native/splash-screen";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { HttpClientModule } from "@angular/common/http";
 import { IonicStorageModule } from "@ionic/storage";
+import { CallLog } from "@ionic-native/call-log";
 
 @NgModule({
   declarations: [MyApp, HomePage, ListPage, SettingsPage],
@@ -27,6 +28,7 @@ import { IonicStorageModule } from "@ionic/storage";
     StatusBar,
     SplashScreen,
     AndroidPermissions,
+    CallLog,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
