@@ -12,6 +12,10 @@ import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { Storage } from "@ionic/storage";
 import { CallLog } from "@ionic-native/call-log";
 import { Observable } from "rxjs/Rx";
+import {
+  NativePageTransitions,
+  NativeTransitionOptions
+} from "@ionic-native/native-page-transitions";
 
 declare var SMS: any;
 
@@ -67,7 +71,8 @@ export class HomePage {
     public http: HttpClient,
     public storage: Storage,
     public formBuilder: FormBuilder,
-    public callLog: CallLog
+    public callLog: CallLog,
+    private nativePageTransitions: NativePageTransitions
   ) {
     this.saveEmailsWithOptions = this.formBuilder.group({
       emailId: ["", [Validators.required, Validators.email]],
@@ -80,13 +85,13 @@ export class HomePage {
     // READ_SMS Android permission.
     this.androidPermissions
       .checkPermission(this.androidPermissions.PERMISSION.READ_SMS)
-      .then(
-        success => console.log("Permission granted" + success),
-        err =>
-          this.androidPermissions.requestPermission(
-            this.androidPermissions.PERMISSION.READ_SMS
-          )
-      );
+      .then(success => console.log("Permission granted" + success))
+      .catch(error => {
+        this.androidPermissions.requestPermission(
+          this.androidPermissions.PERMISSION.READ_SMS
+        );
+        console.log(JSON.stringify(error));
+      });
 
     this.androidPermissions
       .requestPermissions([this.androidPermissions.PERMISSION.READ_SMS])
@@ -397,5 +402,27 @@ export class HomePage {
       position: "bottom"
     });
     toast.present();
+  }
+
+  ionViewWillLeave() {
+    let options: NativeTransitionOptions = {
+      direction: "up",
+      duration: 500,
+      slowdownfactor: 3,
+      slidePixels: 20,
+      iosdelay: 100,
+      androiddelay: 150,
+      fixedPixelsTop: 0,
+      fixedPixelsBottom: 60
+    };
+
+    this.nativePageTransitions
+      .slide(options)
+      .then(onSuccess => {
+        console.log(JSON.stringify(onSuccess));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
   }
 }

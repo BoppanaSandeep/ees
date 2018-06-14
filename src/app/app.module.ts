@@ -13,6 +13,7 @@ import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { HttpClientModule } from "@angular/common/http";
 import { IonicStorageModule } from "@ionic/storage";
 import { CallLog } from "@ionic-native/call-log";
+import { NativePageTransitions } from "@ionic-native/native-page-transitions";
 
 @NgModule({
   declarations: [MyApp, HomePage, ListPage, SettingsPage],
@@ -29,6 +30,7 @@ import { CallLog } from "@ionic-native/call-log";
     SplashScreen,
     AndroidPermissions,
     CallLog,
+    NativePageTransitions,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
