@@ -1,6 +1,10 @@
 import { Component } from "@angular/core";
 import { NavController, NavParams } from "ionic-angular";
 import { Storage } from "@ionic/storage";
+import {
+  NativePageTransitions,
+  NativeTransitionOptions
+} from "@ionic-native/native-page-transitions";
 
 @Component({
   selector: "page-settings",
@@ -11,11 +15,34 @@ export class SettingsPage {
   watchCallLog: boolean;
   clearDisableForSMS: boolean;
   clearDisableForSavedEmails: boolean;
+  public options: NativeTransitionOptions = {
+    direction: "left",
+    duration: 500,
+    slowdownfactor: 2,
+    slidePixels: 20,
+    iosdelay: 100,
+    androiddelay: 100,
+    fixedPixelsTop: 0,
+    fixedPixelsBottom: 60
+  };
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public storage: Storage
+    public storage: Storage,
+    private nativePageTransitions: NativePageTransitions
   ) {}
+
+  ionViewWillEnter() {
+    this.nativePageTransitions
+      .flip(this.options)
+      .then(onSuccess => {
+        console.log(JSON.stringify(onSuccess));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
+  }
 
   ionViewDidLoad() {
     console.log("ionViewDidLoad SettingsPage");
@@ -99,6 +126,17 @@ export class SettingsPage {
       })
       .catch(error => {
         console.log(error);
+      });
+  }
+
+  ionViewWillLeave() {
+    this.nativePageTransitions
+      .flip(this.options)
+      .then(onSuccess => {
+        console.log(JSON.stringify(onSuccess));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
       });
   }
 }

@@ -45,7 +45,6 @@ declare var SMS: any;
 export class HomePage {
   WatchingSMS: boolean;
   debug: any = [];
-  url = new shareComponent();
   shareComponent = new shareComponent();
   obj = {
     address: "9573879057",
@@ -62,6 +61,17 @@ export class HomePage {
   public saveEmailsWithOptions: FormGroup;
   public readSavedEmails;
   public readMissedCalls;
+  public options: NativeTransitionOptions = {
+    direction: "left",
+    duration: 500,
+    slowdownfactor: 2,
+    slidePixels: 20,
+    iosdelay: 100,
+    androiddelay: 100,
+    fixedPixelsTop: 0,
+    fixedPixelsBottom: 60
+  };
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -82,6 +92,15 @@ export class HomePage {
   }
 
   ionViewWillEnter() {
+    this.nativePageTransitions
+      .flip(this.options)
+      .then(onSuccess => {
+        console.log(JSON.stringify(onSuccess));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
+
     // READ_SMS Android permission.
     this.androidPermissions
       .checkPermission(this.androidPermissions.PERMISSION.READ_SMS)
@@ -204,7 +223,7 @@ export class HomePage {
       })
     };
     this.http
-      .post(this.url.email_url, params, httpOptions)
+      .post(this.shareComponent.email_url, params, httpOptions)
       .toPromise()
       .then(res => {
         console.log(res);
@@ -405,19 +424,8 @@ export class HomePage {
   }
 
   ionViewWillLeave() {
-    let options: NativeTransitionOptions = {
-      direction: "up",
-      duration: 500,
-      slowdownfactor: 3,
-      slidePixels: 20,
-      iosdelay: 100,
-      androiddelay: 150,
-      fixedPixelsTop: 0,
-      fixedPixelsBottom: 60
-    };
-
     this.nativePageTransitions
-      .slide(options)
+      .flip(this.options)
       .then(onSuccess => {
         console.log(JSON.stringify(onSuccess));
       })

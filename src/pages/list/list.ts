@@ -2,6 +2,11 @@ import { Component } from "@angular/core";
 import { NavController, NavParams, Platform } from "ionic-angular";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 import { Storage } from "@ionic/storage";
+import {
+  NativePageTransitions,
+  NativeTransitionOptions
+} from "@ionic-native/native-page-transitions";
+
 @Component({
   selector: "page-list",
   templateUrl: "list.html"
@@ -9,14 +14,37 @@ import { Storage } from "@ionic/storage";
 export class ListPage {
   readSMSList: any;
   segment = "Messages";
+  public options: NativeTransitionOptions = {
+    direction: "left",
+    duration: 500,
+    slowdownfactor: 2,
+    slidePixels: 20,
+    iosdelay: 100,
+    androiddelay: 100,
+    fixedPixelsTop: 0,
+    fixedPixelsBottom: 60
+  };
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public androidPermissions: AndroidPermissions,
     public platform: Platform,
-    public storage: Storage
+    public storage: Storage,
+    private nativePageTransitions: NativePageTransitions
   ) {
     this.updateSMSView();
+  }
+
+  ionViewWillEnter() {
+    this.nativePageTransitions
+      .flip(this.options)
+      .then(onSuccess => {
+        console.log(JSON.stringify(onSuccess));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
   }
 
   updateView() {
@@ -77,5 +105,16 @@ export class ListPage {
         }
       }
     });
+  }
+
+  ionViewWillLeave() {
+    this.nativePageTransitions
+      .flip(this.options)
+      .then(onSuccess => {
+        console.log(JSON.stringify(onSuccess));
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
   }
 }
