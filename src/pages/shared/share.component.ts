@@ -4,18 +4,6 @@ export class shareComponent {
     new Date("Mon, 25 Dec 2017 01:00:00 GMT").getTime() / 1000
   );
   public previous_time = this.unixTimestamp;
-  // public filters: any = [
-  //   {
-  //     name: "type",
-  //     value: "MISSED_TYPE",
-  //     operator: "like"
-  //   },
-  //   {
-  //     name: "date",
-  //     value: this.convertTimestamp(this.previous_time),
-  //     operator: ">="
-  //   }
-  // ];
 
   public filters: any = [
     {
@@ -25,7 +13,7 @@ export class shareComponent {
     },
     {
       name: "date",
-      value: 1522232800197,
+      value: Date.parse(new Date().toUTCString())/1000,
       operator: ">="
     }
   ];

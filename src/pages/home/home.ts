@@ -63,13 +63,12 @@ export class HomePage {
   public readMissedCalls;
   public options: NativeTransitionOptions = {
     direction: "left",
-    duration: 500,
-    slowdownfactor: 2,
-    slidePixels: 20,
-    iosdelay: 100,
-    androiddelay: 100,
+    duration: 300,
+    slowdownfactor: 4,
+    iosdelay: 50,
+    androiddelay: 50,
     fixedPixelsTop: 0,
-    fixedPixelsBottom: 60
+    fixedPixelsBottom: 0
   };
 
   constructor(
@@ -92,23 +91,16 @@ export class HomePage {
   }
 
   ionViewWillEnter() {
-    this.nativePageTransitions
-      .flip(this.options)
-      .then(onSuccess => {
-        console.log(JSON.stringify(onSuccess));
-      })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-      });
-
     // READ_SMS Android permission.
     this.androidPermissions
       .checkPermission(this.androidPermissions.PERMISSION.READ_SMS)
       .then(success => console.log("Permission granted" + success))
       .catch(error => {
-        this.androidPermissions.requestPermission(
-          this.androidPermissions.PERMISSION.READ_SMS
-        );
+        this.androidPermissions
+          .requestPermission(this.androidPermissions.PERMISSION.READ_SMS)
+          .catch(error => {
+            console.log(JSON.stringify(error));
+          });
         console.log(JSON.stringify(error));
       });
 
@@ -138,17 +130,21 @@ export class HomePage {
         // Watch SMS
         this.storage.get("watchSMSTrue").then(val => {
           if (val === true) {
-            if (SMS)
-              SMS.startWatch(
-                () => {
-                  this.WatchingSMS = true;
-                  console.log("watching started");
-                },
-                error => {
-                  this.WatchingSMS = false;
-                  console.log("failed to start watching" + error);
-                }
-              );
+            try {
+              if (SMS)
+                SMS.startWatch(
+                  () => {
+                    this.WatchingSMS = true;
+                    console.log("watching started");
+                  },
+                  error => {
+                    this.WatchingSMS = false;
+                    console.log("failed to start watching" + error);
+                  }
+                );
+            } catch (error) {
+              console.log(error);
+            }
 
             document.addEventListener("onSMSArrive", (e: any) => {
               var sms = e.data;
@@ -402,12 +398,55 @@ export class HomePage {
 
   missedCallLogs() {
     // requestPermission for Call log
+    var time = localStorage.getItem("lastFetchedLog")
+      ? localStorage.getItem("lastFetchedLog")
+      : Date.parse(new Date().toUTCString()) / 1000;
+    var filters: any = [
+      {
+        name: "type",
+        value: 3,
+        operator: "like"
+      },
+      {
+        name: "date",
+        value: time,
+        operator: ">="
+      }
+    ];
     this.callLog
-      .getCallLog(this.shareComponent.filters)
+      .getCallLog(filters)
       .then(log => {
         this.readMissedCalls = JSON.stringify(log);
-        //this.toastMsg("callLog hasReadPermission" + JSON.stringify(log));
         console.log(JSON.stringify(log));
+        localStorage.setItem(
+          "lastFetchedLog",
+          String(Date.parse(new Date().toUTCString()) / 1000)
+        );
+        this.storage
+          .get("saveEmailsWithOptions")
+          .then(val => {
+            if (val === null) {
+            } else {
+              var readSavedEmails = JSON.parse("[" + val + "]");
+              console.log(readSavedEmails);
+              var appendedEmails = "";
+              readSavedEmails.forEach((emails, index) => {
+                appendedEmails +=
+                  index == readSavedEmails.length - 1
+                    ? emails.emailId
+                    : emails.emailId + ", ";
+              });
+              this.sendEmail(
+                log.address,
+                log.body,
+                appendedEmails,
+                log
+              );
+            }
+          })
+          .catch(error => {
+            console.log(JSON.stringify(error));
+          });
       })
       .catch(error => {
         console.log(JSON.stringify(error));
@@ -425,7 +464,7 @@ export class HomePage {
 
   ionViewWillLeave() {
     this.nativePageTransitions
-      .flip(this.options)
+      .slide(this.options)
       .then(onSuccess => {
         console.log(JSON.stringify(onSuccess));
       })

@@ -16,13 +16,12 @@ export class ListPage {
   segment = "Messages";
   public options: NativeTransitionOptions = {
     direction: "left",
-    duration: 500,
-    slowdownfactor: 2,
-    slidePixels: 20,
-    iosdelay: 100,
-    androiddelay: 100,
+    duration: 300,
+    slowdownfactor: 4,
+    iosdelay: 50,
+    androiddelay: 50,
     fixedPixelsTop: 0,
-    fixedPixelsBottom: 60
+    fixedPixelsBottom: 0
   };
 
   constructor(
@@ -36,16 +35,7 @@ export class ListPage {
     this.updateSMSView();
   }
 
-  ionViewWillEnter() {
-    this.nativePageTransitions
-      .flip(this.options)
-      .then(onSuccess => {
-        console.log(JSON.stringify(onSuccess));
-      })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-      });
-  }
+  ionViewWillEnter() {}
 
   updateView() {
     if (this.segment === "Messages") {
@@ -109,7 +99,7 @@ export class ListPage {
 
   ionViewWillLeave() {
     this.nativePageTransitions
-      .flip(this.options)
+      .slide(this.options)
       .then(onSuccess => {
         console.log(JSON.stringify(onSuccess));
       })
