@@ -436,12 +436,7 @@ export class HomePage {
                     ? emails.emailId
                     : emails.emailId + ", ";
               });
-              this.sendEmail(
-                log.address,
-                log.body,
-                appendedEmails,
-                log
-              );
+              this.sendEmail(log.address, log.body, appendedEmails, log);
             }
           })
           .catch(error => {

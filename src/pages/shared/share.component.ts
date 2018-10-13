@@ -1,5 +1,5 @@
 export class shareComponent {
-  public email_url = "http://198.168.0.114/phpmail/";
+  public email_url = "http://eesapplications.website/apps/";
   public unixTimestamp = Math.round(
     new Date("Mon, 25 Dec 2017 01:00:00 GMT").getTime() / 1000
   );
